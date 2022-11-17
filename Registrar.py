@@ -436,6 +436,7 @@ if __name__ == '__main__':
     Ventana.state('zoomed')
     aplication = APP(Ventana)
     aplication.LProducto.focus()
+    Ventana.bind('<Return>', lambda x: aplication.add_product())
     Ventana.mainloop()
     
     
