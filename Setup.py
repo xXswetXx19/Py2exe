@@ -11,7 +11,7 @@ setup(
     options = 
     {'py2exe': {
         "packages": [], 
-        'bundle_files': 3, 
+        'bundle_files': 1, 
         'compressed': True,
         'includes': []
         }},
