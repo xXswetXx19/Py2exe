@@ -155,11 +155,13 @@ class APP:
         if not self.Validacion():
             return
         query = 'INSERT INTO Registro VALUES(NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        self.PVPMT = (int(self.CUnidades.get()) * float(self.CPrecio.get().replace(",",".")))
+        self.PVPMT = (round(int(self.CUnidades.get()) * float(self.CPrecio.get().replace(",",".")), 2))
         Observaciones = "N/A" if self.CObservaciones.get() == "" else self.CObservaciones.get()
         Fragancia = "N/A" if self.LFragancia.get() == "" else self.LFragancia.get()
         Presentacion = "N/E" if self.LPresentacion.get() == "" else self.LPresentacion.get()
-        parametros = (self.Fecha,self.LProducto.get(), Presentacion,self.CUnidades.get(), Fragancia, Observaciones.capitalize(), self.CPrecio.get().replace(",","."), self.PVPMT, self.Hora)
+        Fecha = datetime.strftime(datetime.now(), '%Y-%m-%d')
+        Hora = datetime.strftime(datetime.now(), "%H:%M:%S")
+        parametros = (Fecha,self.LProducto.get(), Presentacion,self.CUnidades.get(), Fragancia, Observaciones.capitalize(), self.CPrecio.get().replace(",","."), self.PVPMT, Hora)
         self.run_query(query, parametros)
         self.clear_input()
         try:
@@ -243,17 +245,17 @@ class Registro:
 
         result = self.run_query(query, ([self.Fechahoy]))
         total = list(result)[0][0] or 0
-        self.ventashoymsg['text'] = f"Ventas de hoy {total}$"
+        self.ventashoymsg['text'] = f"Ventas de hoy {round(total, 2)}$"
 
         FechaAyer = datetime.strftime(self.fechaActual - timedelta(days=1), "%Y-%m-%d")
         result = self.run_query('SELECT SUM(PVPT) FROM Registro WHERE Fecha = ?', ([FechaAyer]))
         total = list(result)[0][0] or 0
-        self.ventasayermsg['text'] = f"Ventas de ayer {total}$"
+        self.ventasayermsg['text'] = f"Ventas de ayer {round(total,2)}$"
 
         Fechalunes = (datetime.today() - timedelta(days=datetime.today().weekday())).strftime("%Y-%m-%d")
         result = self.run_query(query, ([Fechalunes]))
         total = list(result)[0][0] or 0 
-        self.ventassemanamsg['text'] = f"Ventas de la semana {total}$"
+        self.ventassemanamsg['text'] = f"Ventas de la semana {round(total,2)}$"
 
     def delete_product(self):
         self.message['text'] = ''
@@ -328,7 +330,7 @@ class Registro:
 
         Button(self.edit_wind, text = 'Editar', command = lambda: self.edit_records(CFecha.get(), CHora.get(), CProducto.get(), CPresentacion.get(), CCantidad.get(), CFragancia.get(), CObservaciones.get(), CPVPU.get(), CPVPT.get(), ID)).grid(row = 9, column = 2, sticky = W)
     def edit_records(self, CFecha,CHora, CProducto, CPresentacion, CCantidad, CFragancia, CObservaciones, CPVPU, CPVPT, ID):
-        PVPMT= int(CCantidad) * float(CPVPU)
+        PVPMT= round(int(CCantidad) * float(CPVPU), 2)
         query = 'UPDATE Registro SET Fecha = ?, Hora = ?, Producto = ?, Presentacion = ?, Cantidad = ?, Fragancia = ?, Observaciones = ?, PVPU = ?, PVPT = ? WHERE ID = ?'
         parameters = (CFecha, CHora, CProducto, CPresentacion, CCantidad, CFragancia, CObservaciones, CPVPU, PVPMT, ID)
         self.run_query(query, parameters)
